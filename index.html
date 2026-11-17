@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Padel Klatovy – Shop</title>
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+:root{--bg:#0f172a;--panel:#111c33;--card:#16233f;--line:#24345a;--txt:#e7edf8;--mut:#93a3c2;--acc:#c6f432;--acc2:#0ea5e9;--red:#f87171;--ok:#4ade80;--warn:#fbbf24;--r:14px}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--card);border:1px solid var(--line)}
+button:hover{border-color:var(--acc2)}button.p{background:var(--acc);color:#0b1020;font-weight:700;border-color:var(--acc)}
+button.d{background:transparent;color:var(--red);border-color:#5b2330}button.s{padding:6px 10px;font-size:13px}button.big{padding:16px 18px;font-size:17px;font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{background:#0b1427;border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc2);outline-offset:-1px}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 4px}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header .logo{font-weight:800;letter-spacing:.3px}header .logo b{color:var(--acc)}
+nav{display:flex;gap:6px;flex-wrap:wrap;flex:1}nav button{background:transparent;border-color:transparent;color:var(--mut)}
+nav button.on{background:var(--card);color:var(--txt);border-color:var(--line)}
+main{padding:16px;max-width:1400px;margin:0 auto}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.card h3{margin:0 0 10px;font-size:15px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+table{width:100%;border-collapse:collapse}th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{color:var(--mut);font-weight:500;font-size:12px}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;background:var(--card);border:1px solid var(--line)}
+.pill.ok{color:var(--ok);border-color:#1f5134}.pill.err{color:var(--red);border-color:#5b2330}.pill.w{color:var(--warn);border-color:#5a4612}
+.mut{color:var(--mut)}.tot{font-size:30px;font-weight:800}.low{color:var(--warn)}.neg{color:var(--red)}
+.scan{font-size:18px;padding:14px;border:2px solid var(--acc2)}
+.list{max-height:60vh;overflow:auto}.hit{display:flex;justify-content:space-between;gap:8px;padding:10px;border-radius:10px;cursor:pointer}
+.hit:hover{background:var(--card)}
+.qty{display:flex;align-items:center;gap:4px}.qty button{padding:4px 10px}.qty input{width:56px;text-align:center;padding:6px}
+.modal{position:fixed;inset:0;background:rgba(3,7,18,.72);display:flex;align-items:flex-start;justify-content:center;z-index:50;padding:40px 12px;overflow:auto}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;width:min(720px,100%)}
+.modal .box h2{margin:0 0 12px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#020617;border:1px solid var(--line);padding:12px 18px;border-radius:12px;display:none;z-index:99;max-width:90vw}
+#reader{width:100%;max-width:480px;margin:auto}
+.cat{display:flex;gap:6px;flex-wrap:wrap}.cat button.on{background:var(--acc);color:#0b1020;border-color:var(--acc)}
+.stat{background:var(--card);border-radius:12px;padding:12px;min-width:150px}.stat b{display:block;font-size:22px}
+.hide{display:none!important}
+/* tisk */
+#print{display:none}
+@media print{body{background:#fff;color:#000;padding:0}header,main,#toast,.modal{display:none!important}#print{display:block}
+ .rcpt{width:72mm;font:12px/1.35 monospace;color:#000}.rcpt h4{margin:0;text-align:center;font-size:14px}.rcpt table td{border:0;padding:1px 0}
+ .labels{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}.lbl{border:1px dashed #999;padding:2mm;text-align:center;font:10px sans-serif;color:#000;break-inside:avoid}
+ .lbl b{display:block;font-size:11px}.lbl svg{width:100%;height:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">PADEL <b>KLATOVY</b> · shop</div>
+  <nav id="nav"></nav>
+  <span id="who" class="mut" style="font-size:13px"></span>
+  <button class="s" id="logout">Odhlásit</button>
+</header>
+<main id="app"></main>
+<div id="print"></div>
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const SB_URL = "https://sznmpxisnmzpjiyikdmi.supabase.co";
+const SB_KEY = "sb_publishable_rBJaxPp-sCRifk4HhEM0tw_hyI6Jz9O";
+const sb = createClient(SB_URL, SB_KEY, { auth: { persistSession: true } });
+
+// ---------- pomocné ----------
+const $ = (s, el = document) => el.querySelector(s);
+const h = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const kc = (n) => (Number(n) || 0).toLocaleString("cs-CZ", { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + " Kč";
+const num = (v) => { const n = parseFloat(String(v).replace(",", ".").replace(/\s/g, "")); return isNaN(n) ? 0 : n; };
+const dt = (d) => new Date(d).toLocaleString("cs-CZ", { day: "numeric", month: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
+const today = () => new Date().toISOString().slice(0, 10);
+const CATS = { rakety: "Rakety", boty: "Boty", textil: "Textil", micky: "Míčky", tasky: "Tašky", grip: "Gripy", prislusenstvi: "Příslušenství", ostatni: "Ostatní" };
+function toast(msg, ms = 2600) { const t = $("#toast"); t.textContent = msg; t.style.display = "block"; clearTimeout(t._t); t._t = setTimeout(() => (t.style.display = "none"), ms); }
+function beep(ok = true) { try { const a = new (window.AudioContext || window.webkitAudioContext)(); const o = a.createOscillator(); o.frequency.value = ok ? 1200 : 300; o.connect(a.destination); o.start(); o.stop(a.currentTime + 0.08); } catch {} }
+function modal(html, onMount) {
+  const m = document.createElement("div"); m.className = "modal"; m.innerHTML = `<div class="box">${html}</div>`;
+  m.addEventListener("mousedown", (e) => { if (e.target === m) close(); });
+  const close = () => { m.remove(); stopCamera(); }; m.close = close;
+  document.body.appendChild(m); onMount?.(m, close); return m;
+}
+function ask(title, text) { return new Promise((res) => modal(`<h2>${h(title)}</h2><p>${h(text)}</p><div class="row" style="justify-content:flex-end"><button id="n">Zrušit</button><button class="p" id="y">Potvrdit</button></div>`, (m, c) => { $("#n", m).onclick = () => { c(); res(false); }; $("#y", m).onclick = () => { c(); res(true); }; })); }
+function err(e) { console.error(e); toast("Chyba: " + (e?.message || e), 5000); beep(false); }
+function download(name, rows) {
+  const csv = "﻿" + rows.map((r) => r.map((v) => { const s = String(v ?? ""); return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(";")).join("\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = name; a.click();
+}
+
+// ---------- kamera ----------
+let cam = null;
+async function stopCamera() { if (cam) { try { await cam.stop(); } catch {} cam = null; } }
+function cameraScan(onCode, continuous = false) {
+  modal(`<h2>Skenovat kamerou</h2><div id="reader"></div><p class="mut" style="text-align:center">Namiřte na čárový kód</p><div class="row" style="justify-content:flex-end"><button id="cx">Hotovo</button></div>`, (m, close) => {
+    $("#cx", m).onclick = close;
+    cam = new Html5Qrcode("reader", { formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.QR_CODE], verbose: false });
+    let last = "", lastT = 0;
+    cam.start({ facingMode: "environment" }, { fps: 12, qrbox: { width: 280, height: 140 } }, (code) => {
+      const now = Date.now(); if (code === last && now - lastT < 1800) return; last = code; lastT = now;
+      beep(); onCode(code.trim()); if (!continuous) close();
+    }).catch((e) => { $("#reader", m).innerHTML = `<p class="neg">Kameru nelze spustit: ${h(e?.message || e)}</p>`; });
+  });
+}
+
+// ---------- data ----------
+const S = { user: null, staff: null, settings: {}, stock: [], suppliers: [], view: "prodej", cart: [], recv: [], inv: new Map() };
+async function loadStock() {
+  const { data, error } = await sb.from("v_stock").select("*").order("brand").order("name").order("size");
+  if (error) throw error; S.stock = data;
+}
+async function loadBase() {
+  const [st, su, se] = await Promise.all([sb.from("staff").select("*"), sb.from("suppliers").select("*").order("name"), sb.from("settings").select("*").single()]);
+  S.staffAll = st.data || []; S.staff = S.staffAll.find((x) => x.email.toLowerCase() === S.user.email.toLowerCase());
+  S.suppliers = su.data || []; S.settings = se.data || {}; await loadStock();
+}
+const byCode = (code) => S.stock.find((v) => v.ean === code || v.sku === code);
+const vlabel = (v) => `${v.brand} ${v.name}${v.size ? " · " + v.size : ""}${v.color ? " · " + v.color : ""}`;
+function search(q, lim = 40) {
+  q = q.trim().toLowerCase(); if (!q) return [];
+  const parts = q.split(/\s+/);
+  return S.stock.filter((v) => v.active !== false && parts.every((p) => `${v.brand} ${v.name} ${v.size || ""} ${v.color || ""} ${v.ean || ""} ${v.sku || ""} ${CATS[v.category]}`.toLowerCase().includes(p))).slice(0, lim);
+}
+
+// ---------- přihlášení ----------
+function renderLogin(msg = "") {
+  $("header").classList.add("hide");
+  $("#app").innerHTML = `<div class="card" style="max-width:420px;margin:60px auto">
+  <h2 style="margin-top:0">Padel Klatovy · <span style="color:var(--acc)">shop</span></h2>
+  <p class="mut">${h(msg) || "Přihlaste se e-mailem a heslem."}</p>
+  <label>E-mail</label><input id="em" type="email" autocomplete="username">
+  <label>Heslo</label><input id="pw" type="password" autocomplete="current-password">
+  <div class="row" style="margin-top:14px"><button class="p grow" id="li">Přihlásit</button><button id="su">Založit účet</button></div>
+  <p class="mut" style="font-size:12px">Účet může založit jen e-mail, který admin přidal mezi obsluhu.</p></div>`;
+  const go = async (signup) => {
+    const email = $("#em").value.trim(), password = $("#pw").value;
+    if (!email || password.length < 6) return toast("Zadejte e-mail a heslo (min. 6 znaků)");
+    const r = signup ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });
+    if (r.error) return err(r.error);
+    if (signup && !r.data.session) { const r2 = await sb.auth.signInWithPassword({ email, password }); if (r2.error) return renderLogin("Účet založen. Potvrďte e-mail a přihlaste se."); }
+    boot();
+  };
+  $("#li").onclick = () => go(false); $("#su").onclick = () => go(true);
+  $("#pw").onkeydown = (e) => e.key === "Enter" && go(false);
+}
+
+// ---------- navigace ----------
+const VIEWS = [["prodej", "Prodej"], ["prijem", "Příjem"], ["sklad", "Sklad"], ["inventura", "Inventura"], ["testery", "Testovací rakety"], ["prehledy", "Přehledy"], ["nastaveni", "Nastavení"]];
+function renderNav() {
+  $("#nav").innerHTML = VIEWS.map(([k, l]) => `<button data-v="${k}" class="${S.view === k ? "on" : ""}">${l}</button>`).join("");
+  $("#nav").querySelectorAll("button").forEach((b) => (b.onclick = () => go(b.dataset.v)));
+}
+function go(v) { S.view = v; location.hash = v; renderNav(); ({ prodej: vProdej, prijem: vPrijem, sklad: vSklad, inventura: vInventura, testery: vTestery, prehledy: vPrehledy, nastaveni: vNastaveni })[v](); }
+
+// ================= PRODEJ =================
+function cartTotal() { const sub = S.cart.reduce((a, l) => a + l.qty * l.price, 0); const disc = S.discPct ? Math.round(sub * S.discPct) / 100 : num(S.discKc || 0); return { sub, disc, tot: Math.max(0, Math.round((sub - disc) * 100) / 100) }; }
+function addToCart(v) {
+  if (!v) return; const l = S.cart.find((x) => x.id === v.variant_id);
+  if (l) l.qty++; else S.cart.push({ id: v.variant_id, label: vlabel(v), price: Number(v.sale_price), qty: 1, stock: v.stock, vat: v.vat_rate });
+  if (v.stock <= 0) toast("Pozor: " + vlabel(v) + " – podle skladu 0 ks");
+  drawCart();
+}
+function vProdej() {
+  $("#app").innerHTML = `<div class="grid2">
+  <div class="card"><h3>Zboží</h3>
+    <div class="row"><input id="scan" class="scan grow" placeholder="Naskenujte čárový kód nebo hledejte (Head Delta, boty 42…)" autocomplete="off"><button id="cam">📷</button></div>
+    <div id="hits" class="list" style="margin-top:8px"></div></div>
+  <div class="card"><h3>Účet</h3><div id="cart"></div></div></div>`;
+  const inp = $("#scan");
+  inp.onkeydown = (e) => { if (e.key === "Enter") { const q = inp.value.trim(); const v = byCode(q); if (v) { beep(); addToCart(v); inp.value = ""; $("#hits").innerHTML = ""; } else { const r = search(q); if (r.length === 1) { addToCart(r[0]); inp.value = ""; $("#hits").innerHTML = ""; } else if (!r.length) { beep(false); toast("Kód " + q + " neznám"); } } } };
+  inp.oninput = () => { const r = search(inp.value); $("#hits").innerHTML = r.map((v, i) => `<div class="hit" data-i="${i}"><span>${h(vlabel(v))} <span class="mut">${h(v.ean || "")}</span></span><span><span class="${v.stock <= 0 ? "neg" : "mut"}">${v.stock} ks</span> &nbsp;<b>${kc(v.sale_price)}</b></span></div>`).join(""); $("#hits").querySelectorAll(".hit").forEach((d) => (d.onclick = () => { addToCart(r[d.dataset.i]); inp.value = ""; $("#hits").innerHTML = ""; inp.focus(); })); };
+  $("#cam").onclick = () => cameraScan((c) => { const v = byCode(c); v ? addToCart(v) : toast("Kód " + c + " neznám"); }, true);
+  drawCart(); inp.focus();
+}
+function drawCart() {
+  const c = $("#cart"); if (!c) return; const t = cartTotal();
+  c.innerHTML = S.cart.length ? `<table>${S.cart.map((l, i) => `<tr><td>${h(l.label)}</td><td><div class="qty"><button data-m="${i}">−</button><input data-q="${i}" value="${l.qty}"><button data-p="${i}">+</button></div></td><td class="n"><input data-pr="${i}" value="${l.price}" style="width:90px;text-align:right"></td><td class="n">${kc(l.qty * l.price)}</td><td><button class="s d" data-x="${i}">✕</button></td></tr>`).join("")}</table>
+  <div class="row" style="margin-top:10px"><label style="margin:0">Sleva</label><input id="dk" placeholder="Kč" style="width:90px" value="${S.discKc || ""}"><input id="dp" placeholder="%" style="width:70px" value="${S.discPct || ""}"><span class="grow"></span><span class="mut">Mezisoučet ${kc(t.sub)}${t.disc ? " · sleva " + kc(t.disc) : ""}</span></div>
+  <div class="row" style="margin:14px 0"><span class="grow">K úhradě</span><span class="tot">${kc(t.tot)}</span></div>
+  <div class="row"><button class="big p grow" data-pay="hotove">Hotově</button><button class="big p grow" data-pay="karta">Kartou</button><button class="big p grow" data-pay="qr">QR platba</button></div>
+  <div class="row" style="margin-top:8px"><button class="s" id="clr">Vyprázdnit</button><span class="mut" style="font-size:12px">EET: ${h(S.settings.eet_mode)}</span></div>`
+    : `<p class="mut">Prázdný účet – naskenujte zboží.</p>`;
+  c.querySelectorAll("[data-m]").forEach((b) => (b.onclick = () => { const l = S.cart[b.dataset.m]; l.qty = Math.max(1, l.qty - 1); drawCart(); }));
+  c.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => { S.cart[b.dataset.p].qty++; drawCart(); }));
+  c.querySelectorAll("[data-q]").forEach((b) => (b.onchange = () => { S.cart[b.dataset.q].qty = Math.max(1, parseInt(b.value) || 1); drawCart(); }));
+  c.querySelectorAll("[data-pr]").forEach((b) => (b.onchange = () => { S.cart[b.dataset.pr].price = num(b.value); drawCart(); }));
+  c.querySelectorAll("[data-x]").forEach((b) => (b.onclick = () => { S.cart.splice(b.dataset.x, 1); drawCart(); }));
+  const dk = $("#dk"), dp = $("#dp");
+  if (dk) { dk.onchange = () => { S.discKc = num(dk.value) || ""; S.discPct = ""; drawCart(); }; dp.onchange = () => { S.discPct = num(dp.value) || ""; S.discKc = ""; drawCart(); }; }
+  c.querySelectorAll("[data-pay]").forEach((b) => (b.onclick = () => pay(b.dataset.pay)));
+  $("#clr") && ($("#clr").onclick = () => { S.cart = []; S.discKc = S.discPct = ""; drawCart(); });
+}
+function spd(amount, msg) { const iban = (S.settings.iban || "").replace(/\s/g, ""); return `SPD*1.0*ACC:${iban}*AM:${amount.toFixed(2)}*CC:CZK*MSG:${msg.slice(0, 60)}`; }
+function qrSvg(text) { const q = qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); }
+function pay(method) {
+  const t = cartTotal();
+  if (method === "hotove") {
+    modal(`<h2>Hotově · ${kc(t.tot)}</h2><label>Přijato</label><input id="rc" inputmode="decimal" class="scan"><p>Vrátit: <b id="chg" class="tot">0 Kč</b></p><div class="row" style="justify-content:flex-end"><button id="n">Zpět</button><button class="p big" id="y">Dokončit prodej</button></div>`, (m, c) => {
+      const rc = $("#rc", m); rc.focus(); rc.oninput = () => ($("#chg", m).textContent = kc(Math.max(0, num(rc.value) - t.tot)));
+      $("#n", m).onclick = c; $("#y", m).onclick = () => { c(); finish("hotove"); }; rc.onkeydown = (e) => e.key === "Enter" && $("#y", m).click();
+    });
+  } else if (method === "qr") {
+    if (!S.settings.iban) return toast("V Nastavení doplňte IBAN pro QR platby");
+    modal(`<h2>QR platba · ${kc(t.tot)}</h2><div style="max-width:320px;margin:auto;background:#fff;padding:8px;border-radius:12px">${qrSvg(spd(t.tot, "Padel shop"))}</div><p class="mut" style="text-align:center">Po připsání / potvrzení platby zákazníkem dokončete prodej.</p><div class="row" style="justify-content:flex-end"><button id="n">Zpět</button><button class="p big" id="y">Zaplaceno – dokončit</button></div>`, (m, c) => { $("#n", m).onclick = c; $("#y", m).onclick = () => { c(); finish("qr"); }; });
+  } else {
+    modal(`<h2>Kartou · ${kc(t.tot)}</h2><p>Zadejte částku <b>${kc(t.tot)}</b> do platebního terminálu. Po schválení platby dokončete prodej.</p><div class="row" style="justify-content:flex-end"><button id="n">Zpět</button><button class="p big" id="y">Platba schválena – dokončit</button></div>`, (m, c) => { $("#n", m).onclick = c; $("#y", m).onclick = () => { c(); finish("karta"); }; });
+  }
+}
+async function finish(method, refundOf = null, items = null) {
+  try {
+    const t = cartTotal();
+    const its = items || S.cart.map((l) => ({ variant_id: l.id, qty: l.qty, unit_price: l.price }));
+    const { data: sale, error } = await sb.rpc("create_sale", { p_payment: method, p_discount: refundOf ? 0 : t.disc, p_items: its, p_refund_of: refundOf });
+    if (error) throw error;
+    if (!refundOf) { S.cart = []; S.discKc = S.discPct = ""; }
+    const eet = await sendEET(sale.id);
+    await loadStock(); if (S.view === "prodej") drawCart();
+    showReceipt(sale.id, eet);
+  } catch (e) { err(e); }
+}
+async function sendEET(id) {
+  try { const { data, error } = await sb.functions.invoke("eet", { body: { sale_id: id } }); if (error) { const b = await error.context?.json?.().catch(() => null); return { ok: false, chyba: b?.error || error.message }; } return data; }
+  catch (e) { return { ok: false, chyba: e.message }; }
+}
+async function showReceipt(id, eet) {
+  const [{ data: s }, { data: items }] = await Promise.all([sb.from("sales").select("*").eq("id", id).single(), sb.from("sale_items").select("*").eq("sale_id", id)]);
+  const html = receiptHtml(s, items);
+  const eetLine = s.eet_status === "odeslano" ? `<span class="pill ok">EET odesláno${s.eet_test ? " (TEST)" : ""}</span>` : s.eet_status === "vypnuto" ? `<span class="pill">EET vypnuto</span>` : `<span class="pill err">EET neodesláno: ${h(s.eet_error || eet?.chyba || eet?.error || "")}</span><br><span class="mut" style="font-size:12px">Prodej je uložen. Zkuste odeslat znovu v Přehledech, při výpadku použijte státní aplikaci MOJE EET.</span>`;
+  modal(`<h2>${s.total < 0 ? "Vratka" : "Prodej"} č. ${s.number} · ${kc(s.total)}</h2><p>${eetLine}</p><div style="background:#fff;color:#000;border-radius:10px;padding:10px;max-width:340px">${html}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px">${s.eet_status !== "odeslano" && s.eet_status !== "vypnuto" ? `<button id="re">Odeslat EET znovu</button>` : ""}<button id="pr">Tisk účtenky</button><button class="p" id="ok">Nový prodej</button></div>`, (m, c) => {
+    $("#ok", m).onclick = () => { c(); $("#scan")?.focus(); };
+    $("#pr", m).onclick = () => { $("#print").innerHTML = html; window.print(); };
+    $("#re", m) && ($("#re", m).onclick = async () => { c(); showReceipt(id, await sendEET(id)); });
+  });
+}
+function receiptHtml(s, items) {
+  const vat = {}; items.forEach((i) => { const gross = i.qty * i.unit_price; vat[i.vat_rate] = (vat[i.vat_rate] || 0) + gross; });
+  const ratio = s.discount && items.length ? (s.total / items.reduce((a, i) => a + i.qty * i.unit_price, 0)) : 1;
+  return `<div class="rcpt"><h4>${h(S.settings.shop_name)}</h4><div style="text-align:center">MKD Enterprise, s.r.o. · DIČ ${h(S.settings.dic)}</div><hr>
+  <div>${s.total < 0 ? "OPRAVNÝ DOKLAD (vratka)" : "Účtenka"} č. ${new Date(s.created_at).getFullYear()}/${s.number}<br>${dt(s.created_at)} · ${({ hotove: "hotově", karta: "kartou", qr: "QR platba" })[s.payment]}</div><hr>
+  <table>${items.map((i) => `<tr><td>${h(i.label)}<br>${i.qty} × ${kc(i.unit_price)}</td><td style="text-align:right">${kc(i.qty * i.unit_price)}</td></tr>`).join("")}
+  ${s.discount ? `<tr><td>Sleva</td><td style="text-align:right">−${kc(s.discount)}</td></tr>` : ""}</table><hr>
+  <table><tr><td><b>CELKEM</b></td><td style="text-align:right"><b>${kc(s.total)}</b></td></tr>
+  ${Object.entries(vat).map(([r, g]) => { const gg = g * ratio; const base = gg / (1 + r / 100); return `<tr><td>Základ ${r} %</td><td style="text-align:right">${kc(base.toFixed(2))}</td></tr><tr><td>DPH ${r} %</td><td style="text-align:right">${kc((gg - base).toFixed(2))}</td></tr>`; }).join("")}</table><hr>
+  <div>Ev. jednotka ${h(S.settings.eet_unit)} · pokladna ${h(S.settings.eet_cashier)}<br>${s.eet_fik ? "POK: " + h(s.eet_fik) : s.eet_status === "vypnuto" ? "" : "EET: tržba bude odeslána dodatečně"}</div>
+  <p style="text-align:center">${h(S.settings.receipt_footer)}</p></div>`;
+}
+
+// ================= PŘÍJEM =================
+function vPrijem() {
+  $("#app").innerHTML = `<div class="grid2"><div class="card"><h3>Příjem zboží</h3>
+    <div class="row"><div class="grow"><label>Dodavatel</label><select id="sup"><option value="">—</option>${S.suppliers.map((s) => `<option value="${s.id}">${h(s.name)}</option>`).join("")}</select></div>
+    <div class="grow"><label>Číslo dodacího listu / faktury</label><input id="doc"></div><button style="align-self:flex-end" id="nsup">+ dodavatel</button></div>
+    <label>Skenujte zboží</label><div class="row"><input id="scan" class="scan grow" placeholder="EAN nebo hledat…" autocomplete="off"><button id="cam">📷</button></div><div id="hits" class="list"></div></div>
+  <div class="card"><h3>Položky příjemky</h3><div id="rl"></div></div></div>`;
+  const inp = $("#scan");
+  const handle = (code) => { const v = byCode(code); if (v) { beep(); addRecv(v); } else { beep(false); newProduct({ ean: code }, (nv) => addRecv(nv)); } };
+  inp.onkeydown = (e) => { if (e.key === "Enter" && inp.value.trim()) { handle(inp.value.trim()); inp.value = ""; $("#hits").innerHTML = ""; } };
+  inp.oninput = () => { const r = search(inp.value); $("#hits").innerHTML = r.map((v, i) => `<div class="hit" data-i="${i}"><span>${h(vlabel(v))}</span><span class="mut">${v.stock} ks</span></div>`).join("") + (inp.value.length > 2 ? `<div class="hit" id="np"><span>+ Nové zboží „${h(inp.value)}“</span></div>` : ""); $("#hits").querySelectorAll(".hit[data-i]").forEach((d) => (d.onclick = () => { addRecv(r[d.dataset.i]); inp.value = ""; $("#hits").innerHTML = ""; })); $("#np") && ($("#np").onclick = () => newProduct({ name: inp.value }, (nv) => { addRecv(nv); inp.value = ""; $("#hits").innerHTML = ""; })); };
+  $("#cam").onclick = () => cameraScan(handle, true);
+  $("#nsup").onclick = () => newSupplier(() => vPrijem());
+  drawRecv(); inp.focus();
+}
+function addRecv(v) { const l = S.recv.find((x) => x.id === v.variant_id); if (l) l.qty++; else S.recv.push({ id: v.variant_id, label: vlabel(v), qty: 1, cost: Number(v.purchase_price), ean: v.ean, price: v.sale_price }); drawRecv(); }
+function drawRecv() {
+  const c = $("#rl"); if (!c) return; const tot = S.recv.reduce((a, l) => a + l.qty * l.cost, 0);
+  c.innerHTML = S.recv.length ? `<table><tr><th>Zboží</th><th>Ks</th><th class="n">Nákup/ks bez DPH</th><th></th></tr>${S.recv.map((l, i) => `<tr><td>${h(l.label)}<br><span class="mut" style="font-size:12px">${h(l.ean || "")}</span></td><td><input data-q="${i}" value="${l.qty}" style="width:60px"></td><td class="n"><input data-c="${i}" value="${l.cost}" style="width:90px;text-align:right"></td><td><button class="s d" data-x="${i}">✕</button></td></tr>`).join("")}</table>
+    <div class="row" style="margin:12px 0"><span class="grow mut">${S.recv.reduce((a, l) => a + l.qty, 0)} ks</span><b>${kc(tot)}</b></div>
+    <div class="row"><button id="lbl">Tisk štítků</button><span class="grow"></span><button class="p big" id="save">Naskladnit</button></div>` : `<p class="mut">Naskenujte první kus. Neznámý kód rovnou založí nové zboží.</p>`;
+  c.querySelectorAll("[data-q]").forEach((b) => (b.onchange = () => { S.recv[b.dataset.q].qty = Math.max(1, parseInt(b.value) || 1); drawRecv(); }));
+  c.querySelectorAll("[data-c]").forEach((b) => (b.onchange = () => { S.recv[b.dataset.c].cost = num(b.value); drawRecv(); }));
+  c.querySelectorAll("[data-x]").forEach((b) => (b.onclick = () => { S.recv.splice(b.dataset.x, 1); drawRecv(); }));
+  $("#lbl") && ($("#lbl").onclick = () => printLabels(S.recv.flatMap((l) => Array(l.qty).fill(S.stock.find((v) => v.variant_id === l.id)))));
+  $("#save") && ($("#save").onclick = async () => {
+    try { const { error } = await sb.rpc("create_receipt", { p_supplier: $("#sup").value || null, p_doc_ref: $("#doc").value || null, p_note: null, p_items: S.recv.map((l) => ({ variant_id: l.id, qty: l.qty, unit_cost: l.cost })) }); if (error) throw error;
+      toast("Naskladněno ✓"); S.recv = []; await loadStock(); vPrijem(); } catch (e) { err(e); }
+  });
+}
+function newSupplier(after) {
+  modal(`<h2>Nový dodavatel</h2><label>Název</label><input id="n"><div class="row"><div class="grow"><label>IČO</label><input id="i"></div><div class="grow"><label>E-mail</label><input id="e"></div></div><div class="row" style="justify-content:flex-end;margin-top:12px"><button id="c">Zrušit</button><button class="p" id="s">Uložit</button></div>`, (m, c) => {
+    $("#c", m).onclick = c; $("#s", m).onclick = async () => { const { data, error } = await sb.from("suppliers").insert({ name: $("#n", m).value, ico: $("#i", m).value, email: $("#e", m).value }).select().single(); if (error) return err(error); S.suppliers.push(data); c(); after?.(data); };
+  });
+}
+
+// ---------- nový produkt / varianty ----------
+function newProduct(pre = {}, after) {
+  const sizes = { boty: "38, 39, 40, 41, 42, 43, 44, 45", textil: "XS, S, M, L, XL, XXL" };
+  modal(`<h2>Nové zboží</h2>
+  <div class="row"><div class="grow"><label>Značka</label><input id="br" list="brands" value="${h(pre.brand || "")}"></div><div class="grow"><label>Název / model</label><input id="nm" value="${h(pre.name || "")}"></div></div>
+  <datalist id="brands">${[...new Set(S.stock.map((v) => v.brand))].map((b) => `<option>${h(b)}`).join("")}${["Bullpadel", "Head", "Babolat", "Adidas", "Nox", "Siux", "Wilson", "Varlion", "Dropshot", "Joma", "Asics"].map((b) => `<option>${b}`).join("")}</datalist>
+  <label>Kategorie</label><div class="cat" id="ct">${Object.entries(CATS).map(([k, l]) => `<button data-c="${k}" class="${k === (pre.category || "rakety") ? "on" : ""}">${l}</button>`).join("")}</div>
+  <div class="row"><div class="grow"><label>Nákupní cena bez DPH</label><input id="pp" inputmode="decimal"></div><div class="grow"><label>Prodejní cena s DPH</label><input id="sp" inputmode="decimal"></div><div style="width:90px"><label>DPH %</label><input id="vat" value="21"></div></div>
+  <div class="row"><div class="grow"><label>Velikosti (oddělené čárkou, prázdné = bez velikostí)</label><input id="sz" placeholder="např. 40, 41, 42 nebo S, M, L"></div><div class="grow"><label>Barva</label><input id="co"></div></div>
+  <div class="row"><div class="grow"><label>EAN (naskenovaný kus; ostatní velikosti dostanou interní kód)</label><input id="ean" value="${h(pre.ean || "")}"></div><div style="width:120px"><label>Min. zásoba</label><input id="mn" value="1"></div></div>
+  <label>Dodavatel</label><select id="sup"><option value="">—</option>${S.suppliers.map((s) => `<option value="${s.id}">${h(s.name)}</option>`).join("")}</select>
+  <p class="mut" style="font-size:12px">Bez EAN přidělím vlastní interní kód (29…), který vytisknete na štítek.</p>
+  <div class="row" style="justify-content:flex-end"><button id="c">Zrušit</button><button class="p" id="s">Uložit</button></div>`, (m, c) => {
+    let cat = pre.category || "rakety";
+    m.querySelectorAll("[data-c]").forEach((b) => (b.onclick = () => { cat = b.dataset.c; m.querySelectorAll("[data-c]").forEach((x) => x.classList.toggle("on", x === b)); if (!$("#sz", m).value && sizes[cat]) $("#sz", m).value = sizes[cat]; }));
+    $("#c", m).onclick = c;
+    $("#s", m).onclick = async () => {
+      try {
+        const brand = $("#br", m).value.trim(), name = $("#nm", m).value.trim(); if (!brand || !name) return toast("Vyplňte značku a název");
+        const { data: p, error } = await sb.from("products").insert({ brand, name, category: cat, vat_rate: num($("#vat", m).value) || 21, supplier_id: $("#sup", m).value || null }).select().single(); if (error) throw error;
+        const szs = $("#sz", m).value.split(",").map((x) => x.trim()).filter(Boolean); const list = szs.length ? szs : [null];
+        const eanField = $("#ean", m).value.trim();
+        const rows = [];
+        for (const sz of list) {
+          let ean = list.length === 1 ? eanField : "";
+          if (!ean) { const { data } = await sb.rpc("next_internal_ean"); ean = data; }
+          rows.push({ product_id: p.id, size: sz, color: $("#co", m).value.trim() || null, ean, purchase_price: num($("#pp", m).value), sale_price: num($("#sp", m).value), min_stock: parseInt($("#mn", m).value) || 0 });
+        }
+        const { data: vs, error: e2 } = await sb.from("variants").insert(rows).select(); if (e2) throw e2;
+        await loadStock(); c(); toast("Uloženo ✓");
+        if (eanField && vs.length > 1) { // naskenovaný EAN přiřadit konkrétní velikosti
+          modal(`<h2>Ke které velikosti patří EAN ${h(eanField)}?</h2><div class="cat">${vs.map((v) => `<button data-v="${v.id}">${h(v.size)}</button>`).join("")}</div>`, (m2, c2) => m2.querySelectorAll("[data-v]").forEach((b) => (b.onclick = async () => { const { error } = await sb.from("variants").update({ ean: eanField }).eq("id", b.dataset.v); if (error) return err(error); await loadStock(); c2(); after?.(S.stock.find((x) => x.variant_id === b.dataset.v)); })));
+        } else after?.(S.stock.find((x) => x.variant_id === vs[0].id));
+      } catch (e) { err(e); }
+    };
+  });
+}
+function editVariant(v) {
+  modal(`<h2>${h(vlabel(v))}</h2>
+  <div class="row"><div class="grow"><label>Velikost</label><input id="sz" value="${h(v.size || "")}"></div><div class="grow"><label>Barva</label><input id="co" value="${h(v.color || "")}"></div></div>
+  <div class="row"><div class="grow"><label>EAN</label><div class="row"><input id="ean" class="grow" value="${h(v.ean || "")}"><button id="cam">📷</button></div></div></div>
+  <div class="row"><div class="grow"><label>Nákup bez DPH</label><input id="pp" value="${v.purchase_price}"></div><div class="grow"><label>Prodej s DPH</label><input id="sp" value="${v.sale_price}"></div><div class="grow"><label>Min. zásoba</label><input id="mn" value="${v.min_stock}"></div></div>
+  <label>Korekce stavu (nyní ${v.stock} ks) – např. +2 nebo −1</label><div class="row"><input id="kq" style="width:100px"><input id="kn" class="grow" placeholder="důvod (poškozeno, nalezeno…)"></div>
+  <div class="row" style="justify-content:space-between;margin-top:14px"><div class="row"><button id="add">+ velikost</button><button id="lb">Štítek</button><button id="hist">Historie</button><button class="d" id="off">${v.active === false ? "Aktivovat" : "Skrýt"}</button></div><div class="row"><button id="c">Zrušit</button><button class="p" id="s">Uložit</button></div></div>`, (m, c) => {
+    $("#cam", m).onclick = () => cameraScan((code) => ($("#ean", m).value = code));
+    $("#c", m).onclick = c;
+    $("#lb", m).onclick = () => printLabels([v]);
+    $("#off", m).onclick = async () => { await sb.from("variants").update({ active: v.active === false }).eq("id", v.variant_id); await loadStock(); c(); vSklad(); };
+    $("#add", m).onclick = () => { c(); addSize(v); };
+    $("#hist", m).onclick = async () => { const { data } = await sb.from("stock_moves").select("*").eq("variant_id", v.variant_id).order("created_at", { ascending: false }).limit(100); modal(`<h2>Pohyby · ${h(vlabel(v))}</h2><table>${(data || []).map((x) => `<tr><td>${dt(x.created_at)}</td><td>${h(x.kind)}</td><td class="n ${x.qty < 0 ? "neg" : ""}">${x.qty > 0 ? "+" : ""}${x.qty}</td><td class="mut">${h(x.note || "")} ${h(x.user_email || "")}</td></tr>`).join("")}</table>`); };
+    $("#s", m).onclick = async () => {
+      try {
+        const { error } = await sb.from("variants").update({ size: $("#sz", m).value || null, color: $("#co", m).value || null, ean: $("#ean", m).value.trim() || null, purchase_price: num($("#pp", m).value), sale_price: num($("#sp", m).value), min_stock: parseInt($("#mn", m).value) || 0 }).eq("id", v.variant_id); if (error) throw error;
+        const kq = parseInt(($("#kq", m).value || "").replace("−", "-")); if (kq) { const { error: e2 } = await sb.from("stock_moves").insert({ variant_id: v.variant_id, qty: kq, kind: "korekce", note: $("#kn", m).value || null }); if (e2) throw e2; }
+        await loadStock(); c(); toast("Uloženo ✓"); if (S.view === "sklad") vSklad();
+      } catch (e) { err(e); }
+    };
+  });
+}
+function addSize(v) {
+  modal(`<h2>Přidat velikost · ${h(v.brand)} ${h(v.name)}</h2><div class="row"><div class="grow"><label>Velikost</label><input id="sz"></div><div class="grow"><label>EAN (nepovinné)</label><input id="ean"></div></div><div class="row" style="justify-content:flex-end;margin-top:12px"><button id="c">Zrušit</button><button class="p" id="s">Přidat</button></div>`, (m, c) => {
+    $("#c", m).onclick = c; $("#s", m).onclick = async () => { let ean = $("#ean", m).value.trim(); if (!ean) ean = (await sb.rpc("next_internal_ean")).data; const { error } = await sb.from("variants").insert({ product_id: v.product_id, size: $("#sz", m).value.trim(), color: v.color, ean, purchase_price: v.purchase_price, sale_price: v.sale_price, min_stock: v.min_stock }); if (error) return err(error); await loadStock(); c(); vSklad(); };
+  });
+}
+function printLabels(vs) {
+  vs = vs.filter(Boolean); if (!vs.length) return;
+  $("#print").innerHTML = `<div class="labels">${vs.map((v, i) => `<div class="lbl"><b>${h(v.brand)} ${h(v.name)}</b>${h([v.size, v.color].filter(Boolean).join(" · "))}<svg id="bc${i}"></svg><b>${kc(v.sale_price)}</b></div>`).join("")}</div>`;
+  vs.forEach((v, i) => { try { JsBarcode(`#bc${i}`, v.ean || v.sku || "000", { format: /^\d{13}$/.test(v.ean) ? "EAN13" : "CODE128", height: 40, fontSize: 12, margin: 0 }); } catch {} });
+  setTimeout(() => window.print(), 200);
+}
+
+// ================= SKLAD =================
+function vSklad() {
+  S.skCat = S.skCat || ""; S.skQ = S.skQ || "";
+  $("#app").innerHTML = `<div class="card"><div class="row"><input id="q" class="grow" placeholder="Hledat / naskenovat…" value="${h(S.skQ)}"><button id="cam">📷</button><label class="row" style="margin:0;color:var(--txt)"><input type="checkbox" id="low" style="width:auto" ${S.skLow ? "checked" : ""}> jen k doobjednání</label><button class="p" id="np">+ Nové zboží</button><button id="exp">Export CSV</button></div>
+  <div class="cat" style="margin:10px 0"><button data-c="" class="${!S.skCat ? "on" : ""}">Vše</button>${Object.entries(CATS).map(([k, l]) => `<button data-c="${k}" class="${S.skCat === k ? "on" : ""}">${l}</button>`).join("")}</div>
+  <div class="row" id="stats"></div><div id="tbl" style="margin-top:10px"></div></div>`;
+  const draw = () => {
+    let rows = S.stock.filter((v) => (!S.skCat || v.category === S.skCat) && (!S.skLow || v.stock <= v.min_stock));
+    if (S.skQ) { const ids = new Set(search(S.skQ, 9999).map((v) => v.variant_id)); rows = rows.filter((v) => ids.has(v.variant_id)); }
+    const ks = rows.reduce((a, v) => a + Math.max(0, v.stock), 0), nak = rows.reduce((a, v) => a + Math.max(0, v.stock) * v.purchase_price, 0), pro = rows.reduce((a, v) => a + Math.max(0, v.stock) * v.sale_price, 0);
+    $("#stats").innerHTML = `<div class="stat"><span class="mut">Kusů</span><b>${ks}</b></div><div class="stat"><span class="mut">Hodnota v nákupu (bez DPH)</span><b>${kc(nak)}</b></div><div class="stat"><span class="mut">Hodnota v prodeji</span><b>${kc(pro)}</b></div><div class="stat"><span class="mut">K doobjednání</span><b>${S.stock.filter((v) => v.active !== false && v.stock <= v.min_stock).length}</b></div>`;
+    const groups = {}; rows.forEach((v) => (groups[v.product_id] = groups[v.product_id] || []).push(v));
+    $("#tbl").innerHTML = `<table><tr><th>Zboží</th><th>Velikost / barva</th><th>EAN</th><th class="n">Nákup</th><th class="n">Prodej</th><th class="n">Marže</th><th class="n">Skladem</th></tr>${Object.values(groups).map((g) => g.map((v, i) => `<tr data-v="${v.variant_id}" style="cursor:pointer;${v.active === false ? "opacity:.45" : ""}"><td>${i === 0 ? `<b>${h(v.brand)} ${h(v.name)}</b> <span class="mut">${CATS[v.category]}</span>` : ""}</td><td>${h([v.size, v.color].filter(Boolean).join(" · ") || "—")}</td><td class="mut">${h(v.ean || "")}</td><td class="n">${kc(v.purchase_price)}</td><td class="n">${kc(v.sale_price)}</td><td class="n mut">${v.sale_price ? Math.round((1 - (v.purchase_price * (1 + v.vat_rate / 100)) / v.sale_price) * 100) + " %" : ""}</td><td class="n ${v.stock <= 0 ? "neg" : v.stock <= v.min_stock ? "low" : ""}"><b>${v.stock}</b></td></tr>`).join("")).join("")}</table>${rows.length ? "" : `<p class="mut">Nic tu není. Začněte „+ Nové zboží“ nebo Příjmem.</p>`}`;
+    $("#tbl").querySelectorAll("[data-v]").forEach((r) => (r.onclick = () => editVariant(S.stock.find((v) => v.variant_id === r.dataset.v))));
+  };
+  $("#q").oninput = (e) => { S.skQ = e.target.value; draw(); };
+  $("#q").onkeydown = (e) => { if (e.key === "Enter") { const v = byCode(e.target.value.trim()); if (v) editVariant(v); } };
+  $("#cam").onclick = () => cameraScan((c) => { const v = byCode(c); v ? editVariant(v) : newProduct({ ean: c }, () => vSklad()); });
+  $("#low").onchange = (e) => { S.skLow = e.target.checked; draw(); };
+  $("#np").onclick = () => newProduct({}, () => vSklad());
+  $("#exp").onclick = () => download(`sklad-${today()}.csv`, [["Značka", "Název", "Kategorie", "Velikost", "Barva", "EAN", "Nákup bez DPH", "Prodej s DPH", "DPH %", "Skladem", "Hodnota nákup"], ...S.stock.map((v) => [v.brand, v.name, CATS[v.category], v.size, v.color, v.ean, v.purchase_price, v.sale_price, v.vat_rate, v.stock, (v.stock * v.purchase_price).toFixed(2)])]);
+  document.querySelectorAll(".cat [data-c]").forEach((b) => (b.onclick = () => { S.skCat = b.dataset.c; vSklad(); }));
+  draw();
+}
+
+// ================= INVENTURA =================
+function vInventura() {
+  $("#app").innerHTML = `<div class="grid2"><div class="card"><h3>Inventura – skenujte každý kus</h3>
+    <div class="row"><input id="scan" class="scan grow" placeholder="EAN…" autocomplete="off"><button id="cam">📷</button></div>
+    <label>Rozsah inventury</label><select id="sc"><option value="">Celý sklad (nenaskenované = 0 ks)</option>${Object.entries(CATS).map(([k, l]) => `<option value="${k}">Jen ${l}</option>`).join("")}<option value="__only">Jen naskenované položky</option></select>
+    <p class="mut" style="font-size:12px">Průběh se ukládá v tomto zařízení, můžete přerušit a pokračovat.</p></div>
+    <div class="card"><h3>Načteno</h3><div id="il"></div></div></div>`;
+  try { S.inv = new Map(JSON.parse(localStorage.getItem("inv") || "[]")); } catch { S.inv = new Map(); }
+  const save = () => { try { localStorage.setItem("inv", JSON.stringify([...S.inv])); } catch {} };
+  const add = (code) => { const v = byCode(code); if (!v) { beep(false); return toast("Neznámý kód " + code); } beep(); S.inv.set(v.variant_id, (S.inv.get(v.variant_id) || 0) + 1); save(); draw(); };
+  const draw = () => {
+    const rows = [...S.inv].map(([id, n]) => ({ v: S.stock.find((x) => x.variant_id === id), n })).filter((r) => r.v);
+    $("#il").innerHTML = rows.length ? `<table><tr><th>Zboží</th><th class="n">Systém</th><th class="n">Napočítáno</th></tr>${rows.map((r) => `<tr><td>${h(vlabel(r.v))}</td><td class="n">${r.v.stock}</td><td class="n"><input data-id="${r.v.variant_id}" value="${r.n}" style="width:70px;text-align:right"></td></tr>`).join("")}</table><div class="row" style="margin-top:12px"><button class="d" id="rs">Zahodit</button><span class="grow"></span><button class="p big" id="fin">Vyhodnotit</button></div>` : `<p class="mut">Zatím nic.</p>`;
+    $("#il").querySelectorAll("[data-id]").forEach((i) => (i.onchange = () => { S.inv.set(i.dataset.id, parseInt(i.value) || 0); save(); }));
+    $("#rs") && ($("#rs").onclick = async () => { if (await ask("Zahodit inventuru?", "Načtené kusy se smažou.")) { S.inv.clear(); save(); draw(); } });
+    $("#fin") && ($("#fin").onclick = () => {
+      const scope = $("#sc").value;
+      const set = scope === "__only" ? S.stock.filter((v) => S.inv.has(v.variant_id)) : S.stock.filter((v) => v.active !== false && (!scope || v.category === scope));
+      const diffs = set.map((v) => ({ v, counted: S.inv.get(v.variant_id) || 0 })).filter((d) => d.counted !== d.v.stock);
+      modal(`<h2>Rozdíly (${diffs.length})</h2>${diffs.length ? `<table><tr><th>Zboží</th><th class="n">Systém</th><th class="n">Skutečnost</th><th class="n">Rozdíl</th></tr>${diffs.map((d) => `<tr><td>${h(vlabel(d.v))}</td><td class="n">${d.v.stock}</td><td class="n">${d.counted}</td><td class="n ${d.counted - d.v.stock < 0 ? "neg" : ""}">${d.counted - d.v.stock > 0 ? "+" : ""}${d.counted - d.v.stock}</td></tr>`).join("")}</table><p>Rozdíl v nákupních cenách: <b>${kc(diffs.reduce((a, d) => a + (d.counted - d.v.stock) * d.v.purchase_price, 0))}</b></p>` : "<p>Vše sedí 👌</p>"}
+      <div class="row" style="justify-content:flex-end"><button id="c">Zpět</button>${diffs.length ? `<button class="p" id="ap">Zapsat inventuru</button>` : ""}</div>`, (m, c) => {
+        $("#c", m).onclick = c;
+        $("#ap", m) && ($("#ap", m).onclick = async () => { const { data, error } = await sb.rpc("apply_inventory", { p_counts: diffs.map((d) => ({ variant_id: d.v.variant_id, counted: d.counted })), p_note: "Inventura " + today() }); if (error) return err(error); toast(`Opraveno ${data} položek ✓`); S.inv.clear(); save(); await loadStock(); c(); vInventura(); });
+      });
+    });
+  };
+  $("#scan").onkeydown = (e) => { if (e.key === "Enter" && e.target.value.trim()) { add(e.target.value.trim()); e.target.value = ""; } };
+  $("#cam").onclick = () => cameraScan(add, true);
+  draw(); $("#scan").focus();
+}
+
+// ================= TESTOVACÍ RAKETY =================
+async function vTestery() {
+  const [{ data: rk }, { data: ln }] = await Promise.all([sb.from("tester_rackets").select("*").order("code"), sb.from("tester_loans").select("*").is("returned_at", null)]);
+  const open = Object.fromEntries((ln || []).map((l) => [l.racket_id, l]));
+  $("#app").innerHTML = `<div class="card"><div class="row"><h3 class="grow" style="margin:0">Testovací rakety</h3><button id="hist">Historie</button><button class="p" id="add">+ Raketa</button></div>
+  <table style="margin-top:10px"><tr><th>Kód</th><th>Raketa</th><th>Stav</th><th></th></tr>${(rk || []).filter((r) => r.active).map((r) => { const l = open[r.id]; const late = l?.due_at && new Date(l.due_at) < new Date(); return `<tr><td><b>${h(r.code)}</b></td><td>${h(r.brand)} ${h(r.model)}</td><td>${l ? `<span class="pill ${late ? "err" : "w"}">${h(l.customer)} ${h(l.phone || "")} · od ${dt(l.out_at)}${l.due_at ? " · do " + dt(l.due_at) : ""}${l.deposit ? " · záloha " + kc(l.deposit) : ""}</span>` : `<span class="pill ok">volná</span>`}</td><td>${l ? `<button class="p s" data-ret="${l.id}">Vrácena</button>` : `<button class="s" data-out="${r.id}">Půjčit</button>`}</td></tr>`; }).join("")}</table>
+  ${(rk || []).length ? "" : `<p class="mut">Přidejte testovací rakety (např. T01 Bullpadel Vertex 04).</p>`}</div>`;
+  $("#add").onclick = () => modal(`<h2>Nová testovací raketa</h2><div class="row"><div style="width:110px"><label>Kód</label><input id="cd" placeholder="T01"></div><div class="grow"><label>Značka</label><input id="br"></div><div class="grow"><label>Model</label><input id="md"></div></div><div class="row" style="justify-content:flex-end;margin-top:12px"><button id="c">Zrušit</button><button class="p" id="s">Uložit</button></div>`, (m, c) => { $("#c", m).onclick = c; $("#s", m).onclick = async () => { const { error } = await sb.from("tester_rackets").insert({ code: $("#cd", m).value, brand: $("#br", m).value, model: $("#md", m).value }); if (error) return err(error); c(); vTestery(); }; });
+  document.querySelectorAll("[data-out]").forEach((b) => (b.onclick = () => modal(`<h2>Půjčit raketu</h2><label>Jméno hráče</label><input id="cu"><div class="row"><div class="grow"><label>Telefon</label><input id="ph" type="tel"></div><div class="grow"><label>Záloha Kč</label><input id="dp" inputmode="decimal"></div><div class="grow"><label>Vrátit do</label><input id="du" type="datetime-local"></div></div><div class="row" style="justify-content:flex-end;margin-top:12px"><button id="c">Zrušit</button><button class="p" id="s">Půjčit</button></div>`, (m, c) => { const d = new Date(Date.now() + 2 * 864e5); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); $("#du", m).value = d.toISOString().slice(0, 16); $("#c", m).onclick = c; $("#s", m).onclick = async () => { if (!$("#cu", m).value) return toast("Vyplňte jméno"); const { error } = await sb.from("tester_loans").insert({ racket_id: b.dataset.out, customer: $("#cu", m).value, phone: $("#ph", m).value, deposit: num($("#dp", m).value), due_at: $("#du", m).value ? new Date($("#du", m).value).toISOString() : null }); if (error) return err(error); c(); vTestery(); }; })));
+  document.querySelectorAll("[data-ret]").forEach((b) => (b.onclick = async () => { const { error } = await sb.from("tester_loans").update({ returned_at: new Date().toISOString() }).eq("id", b.dataset.ret); if (error) return err(error); toast("Vráceno ✓ – nezapomeňte vrátit zálohu"); vTestery(); }));
+  $("#hist").onclick = async () => { const { data } = await sb.from("tester_loans").select("*, tester_rackets(code,brand,model)").order("out_at", { ascending: false }).limit(200); modal(`<h2>Historie půjčení</h2><table>${(data || []).map((l) => `<tr><td>${h(l.tester_rackets?.code)} ${h(l.tester_rackets?.model)}</td><td>${h(l.customer)} ${h(l.phone || "")}</td><td>${dt(l.out_at)}</td><td>${l.returned_at ? dt(l.returned_at) : '<span class="pill w">venku</span>'}</td></tr>`).join("")}</table>`); };
+}
+
+// ================= PŘEHLEDY =================
+async function vPrehledy() {
+  S.rFrom = S.rFrom || today(); S.rTo = S.rTo || today();
+  $("#app").innerHTML = `<div class="card"><div class="row"><label style="margin:0">Od</label><input type="date" id="f" value="${S.rFrom}" style="width:auto"><label style="margin:0">Do</label><input type="date" id="t" value="${S.rTo}" style="width:auto"><button id="dn">Dnes</button><button id="mn">Tento měsíc</button><span class="grow"></span><button id="uz">Uzávěrka (tisk)</button><button id="ex">Export pro účetní</button></div><div class="row" id="st" style="margin:12px 0"></div><div id="eetq"></div><div id="sl"></div></div>`;
+  const reload = () => { S.rFrom = $("#f").value; S.rTo = $("#t").value; vPrehledy(); };
+  $("#f").onchange = $("#t").onchange = reload;
+  $("#dn").onclick = () => { S.rFrom = S.rTo = today(); vPrehledy(); };
+  $("#mn").onclick = () => { S.rFrom = today().slice(0, 8) + "01"; S.rTo = today(); vPrehledy(); };
+  const from = new Date(S.rFrom + "T00:00:00").toISOString(), to = new Date(S.rTo + "T23:59:59").toISOString();
+  const [{ data: sales }, { data: pend }] = await Promise.all([
+    sb.from("sales").select("*, sale_items(*)").gte("created_at", from).lte("created_at", to).order("created_at", { ascending: false }),
+    sb.from("sales").select("id,number,total,created_at,eet_error").in("eet_status", ["ceka", "chyba"]).order("created_at"),
+  ]);
+  const sum = (p) => (sales || []).filter((s) => !p || s.payment === p).reduce((a, s) => a + Number(s.total), 0);
+  const margin = (sales || []).reduce((a, s) => a + s.sale_items.reduce((b, i) => { const v = S.stock.find((x) => x.variant_id === i.variant_id); return b + i.qty * (i.unit_price / (1 + i.vat_rate / 100) - (v?.purchase_price || 0)); }, 0) - (s.discount || 0) / 1.21, 0);
+  $("#st").innerHTML = `<div class="stat"><span class="mut">Tržba celkem</span><b>${kc(sum())}</b></div><div class="stat"><span class="mut">Hotově</span><b>${kc(sum("hotove"))}</b></div><div class="stat"><span class="mut">Kartou</span><b>${kc(sum("karta"))}</b></div><div class="stat"><span class="mut">QR</span><b>${kc(sum("qr"))}</b></div><div class="stat"><span class="mut">Hrubá marže (odhad, bez DPH)</span><b>${kc(Math.round(margin))}</b></div><div class="stat"><span class="mut">Účtenek</span><b>${(sales || []).length}</b></div>`;
+  $("#eetq").innerHTML = (pend || []).length ? `<div class="card" style="border-color:#5b2330;margin-bottom:12px"><div class="row"><b class="grow neg">Neodeslané do EET: ${pend.length}</b><button class="p" id="rall">Odeslat vše znovu</button></div><p class="mut" style="font-size:12px">${pend.slice(0, 5).map((p) => `#${p.number} ${kc(p.total)} – ${h(p.eet_error || "čeká")}`).join("<br>")}</p></div>` : "";
+  $("#rall") && ($("#rall").onclick = async () => { let ok = 0; for (const p of pend) { const r = await sendEET(p.id); if (r?.ok) ok++; } toast(`Odesláno ${ok} z ${pend.length}`); vPrehledy(); });
+  $("#sl").innerHTML = `<table><tr><th>Č.</th><th>Čas</th><th>Položky</th><th>Platba</th><th class="n">Částka</th><th>EET</th><th></th></tr>${(sales || []).map((s) => `<tr><td>${s.number}</td><td>${dt(s.created_at)}</td><td class="mut" style="font-size:13px">${s.sale_items.map((i) => `${i.qty}× ${h(i.label)}`).join("<br>")}</td><td>${({ hotove: "hotově", karta: "karta", qr: "QR" })[s.payment]}</td><td class="n ${s.total < 0 ? "neg" : ""}"><b>${kc(s.total)}</b></td><td>${s.eet_status === "odeslano" ? `<span class="pill ok">${s.eet_test ? "test" : "OK"}</span>` : s.eet_status === "vypnuto" ? '<span class="pill">vyp.</span>' : `<span class="pill err" title="${h(s.eet_error || "")}">${h(s.eet_status)}</span>`}</td><td><button class="s" data-r="${s.id}">Účtenka</button>${s.total > 0 && !s.refund_of ? ` <button class="s d" data-v="${s.id}">Vratka</button>` : ""}</td></tr>`).join("")}</table>`;
+  document.querySelectorAll("[data-r]").forEach((b) => (b.onclick = () => showReceipt(b.dataset.r)));
+  document.querySelectorAll("[data-v]").forEach((b) => (b.onclick = async () => { const s = sales.find((x) => x.id === b.dataset.v); if (await ask(`Vratka účtenky č. ${s.number}?`, `Vrátí se ${kc(s.total)} (${s.payment}) a zboží se vrátí na sklad. Při kartě vraťte peníze přes terminál.`)) finish(s.payment, s.id, s.sale_items.map((i) => ({ variant_id: i.variant_id, qty: i.qty, unit_price: i.unit_price }))); }));
+  $("#uz").onclick = () => { $("#print").innerHTML = `<div class="rcpt"><h4>Uzávěrka ${S.rFrom}${S.rTo !== S.rFrom ? " – " + S.rTo : ""}</h4><hr><table><tr><td>Hotově</td><td style="text-align:right">${kc(sum("hotove"))}</td></tr><tr><td>Kartou</td><td style="text-align:right">${kc(sum("karta"))}</td></tr><tr><td>QR</td><td style="text-align:right">${kc(sum("qr"))}</td></tr><tr><td><b>Celkem</b></td><td style="text-align:right"><b>${kc(sum())}</b></td></tr><tr><td>Účtenek</td><td style="text-align:right">${sales.length}</td></tr><tr><td>Neodesláno EET</td><td style="text-align:right">${(pend || []).length}</td></tr></table><hr>${dt(new Date())} · ${h(S.user.email)}</div>`; window.print(); };
+  $("#ex").onclick = async () => {
+    const { data: rc } = await sb.from("receipts").select("*, receipt_items(*), suppliers(name)").gte("created_at", from).lte("created_at", to);
+    download(`prodeje-${S.rFrom}_${S.rTo}.csv`, [["Číslo", "Datum", "Platba", "Položka", "Ks", "Cena s DPH", "DPH %", "Celkem účtenka", "Sleva", "EET POK"], ...(sales || []).flatMap((s) => s.sale_items.map((i) => [`${new Date(s.created_at).getFullYear()}/${s.number}`, dt(s.created_at), s.payment, i.label, i.qty, i.unit_price, i.vat_rate, s.total, s.discount, s.eet_fik || ""]))]);
+    setTimeout(() => download(`prijemky-${S.rFrom}_${S.rTo}.csv`, [["Příjemka", "Datum", "Dodavatel", "Doklad", "Položka", "Ks", "Nákup/ks bez DPH"], ...(rc || []).flatMap((r) => r.receipt_items.map((i) => { const v = S.stock.find((x) => x.variant_id === i.variant_id); return [r.number, dt(r.created_at), r.suppliers?.name || "", r.doc_ref || "", v ? vlabel(v) : i.variant_id, i.qty, i.unit_cost]; }))]), 400);
+  };
+}
+
+// ================= NASTAVENÍ =================
+function vNastaveni() {
+  const st = S.settings, adm = S.staff?.role === "admin";
+  $("#app").innerHTML = `<div class="grid2"><div class="card"><h3>Obchod a EET</h3>
+  <label>Název na účtence</label><input id="sn" value="${h(st.shop_name)}">
+  <div class="row"><div class="grow"><label>EIČ / DIČ poplatníka</label><input id="dic" value="${h(st.dic)}"></div><div class="grow"><label>Číslo evidenční jednotky (z MOJE daně)</label><input id="eu" value="${h(st.eet_unit)}"></div><div class="grow"><label>Označení pokladny</label><input id="ec" value="${h(st.eet_cashier)}"></div></div>
+  <label>Režim EET</label><select id="em">${[["vypnuto", "Vypnuto (do spuštění EET)"], ["playground", "Testovací prostředí (playground)"], ["produkce", "OSTRÝ provoz"]].map(([k, l]) => `<option value="${k}" ${st.eet_mode === k ? "selected" : ""}>${l}</option>`).join("")}</select>
+  <label>IBAN pro QR platby</label><input id="ib" value="${h(st.iban)}" placeholder="CZ65 0800 0000 1920 0014 5399">
+  <label>Patička účtenky</label><input id="rf" value="${h(st.receipt_footer)}">
+  <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="p" id="sv" ${adm ? "" : "disabled"}>Uložit</button></div>
+  <h3 style="margin-top:20px">Pokladní certifikát EET</h3>
+  <p>${st.cert_subject ? `Nahrán: <b>${h(st.cert_subject)}</b>, platný do ${dt(st.cert_valid_to)}` : '<span class="neg">Certifikát zatím není nahraný.</span>'}</p>
+  <div class="row"><input type="file" id="p12" accept=".p12,.pfx" class="grow"><input type="password" id="pp" placeholder="heslo k certifikátu" style="width:200px"><button id="up" ${adm ? "" : "disabled"}>Nahrát</button></div>
+  <div class="row" style="margin-top:10px"><button id="ov">Ověřit spojení s EET (bez evidence tržby)</button></div><pre id="ovr" class="mut" style="white-space:pre-wrap;font-size:12px"></pre></div>
+  <div class="card"><h3>Obsluha</h3><table>${S.staffAll.map((u) => `<tr><td>${h(u.email)}</td><td>${h(u.name || "")}</td><td>${h(u.role)}</td><td>${adm && u.email !== S.user.email ? `<button class="s d" data-del="${h(u.email)}">✕</button>` : ""}</td></tr>`).join("")}</table>
+  ${adm ? `<div class="row" style="margin-top:8px"><input id="ne" placeholder="e-mail" class="grow"><input id="nn" placeholder="jméno" style="width:140px"><select id="nr" style="width:130px"><option value="prodavac">prodavač</option><option value="admin">admin</option></select><button id="na">Přidat</button></div>` : ""}
+  <h3 style="margin-top:20px">Dodavatelé</h3><table>${S.suppliers.map((s) => `<tr><td>${h(s.name)}</td><td class="mut">${h(s.ico || "")} ${h(s.email || "")}</td></tr>`).join("")}</table><button id="ns" style="margin-top:8px">+ dodavatel</button></div></div>`;
+  $("#sv").onclick = async () => { const { error } = await sb.from("settings").update({ shop_name: $("#sn").value, dic: $("#dic").value.trim().toUpperCase(), eet_unit: $("#eu").value.trim(), eet_cashier: $("#ec").value.trim(), eet_mode: $("#em").value, iban: $("#ib").value.trim(), receipt_footer: $("#rf").value }).eq("id", 1); if (error) return err(error); await loadBase(); toast("Uloženo ✓"); vNastaveni(); };
+  $("#up").onclick = async () => { const f = $("#p12").files[0]; if (!f) return toast("Vyberte soubor .p12"); const b64 = btoa(String.fromCharCode(...new Uint8Array(await f.arrayBuffer()))); const { data, error } = await sb.functions.invoke("eet", { body: { action: "upload_cert", p12_b64: b64, pass: $("#pp").value } }); if (error) { const b = await error.context?.json?.().catch(() => null); return err(b?.error || error.message); } toast("Certifikát nahrán ✓"); await loadBase(); vNastaveni(); };
+  $("#ov").onclick = async () => { $("#ovr").textContent = "Odesílám ověřovací zprávu…"; const { data, error } = await sb.functions.invoke("eet", { body: { action: "overeni" } }); let out = data; if (error) out = await error.context?.json?.().catch(() => ({ error: error.message })); const k = out?.odpoved?.kod; $("#ovr").textContent = (k === 0 ? "✅ Spojení i podpis v pořádku (kód 0 – ověřovací mód)\n" : "") + JSON.stringify(out, null, 2); };
+  $("#ns").onclick = () => newSupplier(() => vNastaveni());
+  $("#na") && ($("#na").onclick = async () => { const { error } = await sb.from("staff").insert({ email: $("#ne").value.trim().toLowerCase(), name: $("#nn").value, role: $("#nr").value }); if (error) return err(error); await loadBase(); vNastaveni(); });
+  document.querySelectorAll("[data-del]").forEach((b) => (b.onclick = async () => { if (await ask("Odebrat obsluhu?", b.dataset.del)) { await sb.from("staff").delete().eq("email", b.dataset.del); await loadBase(); vNastaveni(); } }));
+}
+
+// ---------- start ----------
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return renderLogin();
+  S.user = session.user;
+  try { await loadBase(); } catch (e) { return renderLogin("Chyba načtení: " + e.message); }
+  if (!S.staff) { await sb.auth.signOut(); return renderLogin("Účet " + S.user.email + " není mezi obsluhou. Požádejte admina o přidání."); }
+  $("header").classList.remove("hide"); $("#who").textContent = S.staff.name || S.user.email;
+  const v = location.hash.slice(1); go(VIEWS.some(([k]) => k === v) ? v : "prodej");
+}
+$("#logout").onclick = async () => { await sb.auth.signOut(); renderLogin(); };
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+boot();
+</script>
+</body>
+</html>
