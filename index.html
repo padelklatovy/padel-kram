@@ -139,7 +139,7 @@ function renderLogin(msg = "") {
   $("header").classList.add("hide");
   $("#app").innerHTML = `<div class="card" style="max-width:420px;margin:60px auto">
   <h2 style="margin-top:0">Padel Klatovy · <span style="color:var(--acc)">krám</span></h2>
-  <p class="mut">Přihlaste se e-mailem a heslem.</p>
+  <p class="mut">Přihlaste se e-mailem a heslem. Poprvé si heslo zvolíte – účet se založí automaticky.</p>
   <label>E-mail</label><input id="em" type="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false">
   <label>Heslo (alespoň 6 znaků)</label><input id="pw" type="password" autocomplete="current-password">
   <p id="lmsg" style="min-height:1.4em;margin:10px 0 0;color:var(--warn)">${h(msg)}</p>
@@ -151,13 +151,20 @@ function renderLogin(msg = "") {
     if (!email || password.length < 6) return say("Zadejte e-mail a heslo (alespoň 6 znaků).");
     $("#li").disabled = $("#su").disabled = true; say(signup ? "Zakládám účet…" : "Přihlašuji…", true);
     try {
-      if (signup) {
+      const register = async () => {
         const r = await fetch(SB_URL + "/functions/v1/register", { method: "POST", headers: { "Content-Type": "application/json", apikey: SB_KEY }, body: JSON.stringify({ email, password }) });
         const b = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(b.error || "Registrace selhala (" + r.status + ")");
+        return { ok: r.ok, status: r.status, error: b.error };
+      };
+      if (signup) { const r = await register(); if (!r.ok && r.status !== 409) throw new Error(r.error || "Registrace selhala"); }
+      let { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error && /invalid/i.test(error.message) && !signup) {
+        // účet možná ještě neexistuje → založit ho (jen pro e-mail z obsluhy) a přihlásit
+        const r = await register();
+        if (r.ok) ({ error } = await sb.auth.signInWithPassword({ email, password }));
+        else if (r.status === 403) throw new Error(r.error);
       }
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) throw new Error(/invalid/i.test(error.message) ? "Špatný e-mail nebo heslo." : error.message);
+      if (error) throw new Error(/invalid/i.test(error.message) ? "Špatné heslo." : error.message);
       boot();
     } catch (e) { say(e.message); $("#li").disabled = $("#su").disabled = false; }
   };
