@@ -138,19 +138,28 @@ function search(q, lim = 40) {
 function renderLogin(msg = "") {
   $("header").classList.add("hide");
   $("#app").innerHTML = `<div class="card" style="max-width:420px;margin:60px auto">
-  <h2 style="margin-top:0">Padel Klatovy · <span style="color:var(--acc)">shop</span></h2>
-  <p class="mut">${h(msg) || "Přihlaste se e-mailem a heslem."}</p>
-  <label>E-mail</label><input id="em" type="email" autocomplete="username">
-  <label>Heslo</label><input id="pw" type="password" autocomplete="current-password">
-  <div class="row" style="margin-top:14px"><button class="p grow" id="li">Přihlásit</button><button id="su">Založit účet</button></div>
+  <h2 style="margin-top:0">Padel Klatovy · <span style="color:var(--acc)">krám</span></h2>
+  <p class="mut">Přihlaste se e-mailem a heslem.</p>
+  <label>E-mail</label><input id="em" type="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <label>Heslo (alespoň 6 znaků)</label><input id="pw" type="password" autocomplete="current-password">
+  <p id="lmsg" style="min-height:1.4em;margin:10px 0 0;color:var(--warn)">${h(msg)}</p>
+  <div class="row" style="margin-top:8px"><button class="p grow" id="li">Přihlásit</button><button id="su">Založit účet</button></div>
   <p class="mut" style="font-size:12px">Účet může založit jen e-mail, který admin přidal mezi obsluhu.</p></div>`;
+  const say = (t, ok) => { const e = $("#lmsg"); e.textContent = t; e.style.color = ok ? "var(--ok)" : "var(--warn)"; };
   const go = async (signup) => {
-    const email = $("#em").value.trim(), password = $("#pw").value;
-    if (!email || password.length < 6) return toast("Zadejte e-mail a heslo (min. 6 znaků)");
-    const r = signup ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });
-    if (r.error) return err(r.error);
-    if (signup && !r.data.session) { const r2 = await sb.auth.signInWithPassword({ email, password }); if (r2.error) return renderLogin("Účet založen. Potvrďte e-mail a přihlaste se."); }
-    boot();
+    const email = $("#em").value.trim().toLowerCase(), password = $("#pw").value;
+    if (!email || password.length < 6) return say("Zadejte e-mail a heslo (alespoň 6 znaků).");
+    $("#li").disabled = $("#su").disabled = true; say(signup ? "Zakládám účet…" : "Přihlašuji…", true);
+    try {
+      if (signup) {
+        const r = await fetch(SB_URL + "/functions/v1/register", { method: "POST", headers: { "Content-Type": "application/json", apikey: SB_KEY }, body: JSON.stringify({ email, password }) });
+        const b = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(b.error || "Registrace selhala (" + r.status + ")");
+      }
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw new Error(/invalid/i.test(error.message) ? "Špatný e-mail nebo heslo." : error.message);
+      boot();
+    } catch (e) { say(e.message); $("#li").disabled = $("#su").disabled = false; }
   };
   $("#li").onclick = () => go(false); $("#su").onclick = () => go(true);
   $("#pw").onkeydown = (e) => e.key === "Enter" && go(false);
