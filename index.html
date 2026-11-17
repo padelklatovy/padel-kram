@@ -3,31 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Krám – Padel Klatovy</title>
-<meta name="apple-mobile-web-app-title" content="Krám">
-<meta name="application-name" content="Krám">
-<meta name="theme-color" content="#0f172a">
+<title>pädel kräm</title>
+<meta name="apple-mobile-web-app-title" content="kräm">
+<meta name="application-name" content="kräm">
+<meta name="theme-color" content="#0b0b0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
-:root{--bg:#0f172a;--panel:#111c33;--card:#16233f;--line:#24345a;--txt:#e7edf8;--mut:#93a3c2;--acc:#c6f432;--acc2:#0ea5e9;--red:#f87171;--ok:#4ade80;--warn:#fbbf24;--r:14px}
+:root{--bg:#0b0b0f;--panel:#141419;--card:#1c1c24;--line:#2c2c38;--txt:#e7edf8;--mut:#93a3c2;--acc:#D21B34;--acc2:#e9eef7;--red:#f87171;--ok:#4ade80;--warn:#fbbf24;--r:14px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--card);border:1px solid var(--line)}
-button:hover{border-color:var(--acc2)}button.p{background:var(--acc);color:#0b1020;font-weight:700;border-color:var(--acc)}
+button:hover{border-color:var(--acc2)}button.p{background:var(--acc);color:#fff;font-weight:700;border-color:var(--acc)}
 button.d{background:transparent;color:var(--red);border-color:#5b2330}button.s{padding:6px 10px;font-size:13px}button.big{padding:16px 18px;font-size:17px;font-weight:700}
 button:disabled{opacity:.45;cursor:not-allowed}
-input,select,textarea{background:#0b1427;border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--acc2);outline-offset:-1px}
+input,select,textarea{background:#0f0f14;border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px}
 label{display:block;font-size:12px;color:var(--mut);margin:8px 0 4px}
 header{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
-header .logo{font-weight:800;letter-spacing:.3px}header .logo b{color:var(--acc)}
+header .logo{display:flex;align-items:center;gap:8px}header .logo img{height:22px;display:block}
 nav{display:flex;gap:6px;flex-wrap:wrap;flex:1}nav button{background:transparent;border-color:transparent;color:var(--mut)}
 nav button.on{background:var(--card);color:var(--txt);border-color:var(--line)}
 main{padding:16px;max-width:1400px;margin:0 auto}
@@ -40,7 +41,7 @@ th{color:var(--mut);font-weight:500;font-size:12px}td.n,th.n{text-align:right;fo
 .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;background:var(--card);border:1px solid var(--line)}
 .pill.ok{color:var(--ok);border-color:#1f5134}.pill.err{color:var(--red);border-color:#5b2330}.pill.w{color:var(--warn);border-color:#5a4612}
 .mut{color:var(--mut)}.tot{font-size:30px;font-weight:800}.low{color:var(--warn)}.neg{color:var(--red)}
-.scan{font-size:18px;padding:14px;border:2px solid var(--acc2)}
+.scan{font-size:18px;padding:14px;border:2px solid var(--acc)}
 .list{max-height:60vh;overflow:auto}.hit{display:flex;justify-content:space-between;gap:8px;padding:10px;border-radius:10px;cursor:pointer}
 .hit:hover{background:var(--card)}
 .qty{display:flex;align-items:center;gap:4px}.qty button{padding:4px 10px}.qty input{width:56px;text-align:center;padding:6px}
@@ -49,7 +50,7 @@ th{color:var(--mut);font-weight:500;font-size:12px}td.n,th.n{text-align:right;fo
 .modal .box h2{margin:0 0 12px}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#020617;border:1px solid var(--line);padding:12px 18px;border-radius:12px;display:none;z-index:99;max-width:90vw}
 #reader{width:100%;max-width:480px;margin:auto}
-.cat{display:flex;gap:6px;flex-wrap:wrap}.cat button.on{background:var(--acc);color:#0b1020;border-color:var(--acc)}
+.cat{display:flex;gap:6px;flex-wrap:wrap}.cat button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .stat{background:var(--card);border-radius:12px;padding:12px;min-width:150px}.stat b{display:block;font-size:22px}
 .hide{display:none!important}
 /* tisk */
@@ -62,7 +63,7 @@ th{color:var(--mut);font-weight:500;font-size:12px}td.n,th.n{text-align:right;fo
 </head>
 <body>
 <header>
-  <div class="logo">PADEL <b>KLATOVY</b> · shop</div>
+  <div class="logo"><img src="logo-padel-white.svg" alt="pädel"><img src="logo-kram-white.svg" alt="kräm"></div>
   <nav id="nav"></nav>
   <span id="who" class="mut" style="font-size:13px"></span>
   <button class="s" id="logout">Odhlásit</button>
@@ -138,7 +139,7 @@ function search(q, lim = 40) {
 function renderLogin(msg = "") {
   $("header").classList.add("hide");
   $("#app").innerHTML = `<div class="card" style="max-width:420px;margin:60px auto">
-  <h2 style="margin-top:0">Padel Klatovy · <span style="color:var(--acc)">krám</span></h2>
+  <div style="display:flex;gap:12px;align-items:center;justify-content:center;margin:6px 0 18px"><img src="logo-padel-white.svg" alt="pädel" style="height:38px"><img src="logo-kram-white.svg" alt="kräm" style="height:38px"></div>
   <p class="mut">Přihlaste se e-mailem a heslem. Poprvé si heslo zvolíte – účet se založí automaticky.</p>
   <label>E-mail</label><input id="em" type="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false">
   <label>Heslo (alespoň 6 znaků)</label><input id="pw" type="password" autocomplete="current-password">
