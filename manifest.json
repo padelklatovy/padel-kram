@@ -1,6 +1,6 @@
 {
-  "name": "Padel Klatovy – Shop",
-  "short_name": "PK Shop",
+  "name": "Shop – Padel Klatovy",
+  "short_name": "Shop",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
